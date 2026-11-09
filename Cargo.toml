@@ -1,0 +1,37 @@
+[package]
+name = "hybrid-search-es"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "Elasticsearch hybrid search: BM25 + dense vector fused with RRF"
+
+[features]
+default = []
+# 进程内 BGE。下载官方预编译 ONNX Runtime；x86_64-apple-darwin 没有预编译包。
+local-onnx = [
+    "dep:fastembed",
+    "fastembed/ort-download-binaries-rustls-tls",
+    "fastembed/hf-hub-rustls-tls",
+]
+# 改为运行时加载系统里的 libonnxruntime，用于没有预编译包的平台。
+local-onnx-dynamic = [
+    "dep:fastembed",
+    "fastembed/ort-load-dynamic",
+    "fastembed/hf-hub-rustls-tls",
+]
+
+[dependencies]
+async-trait = "0.1"
+axum = "0.8"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "signal", "net"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+url = "2"
+uuid = { version = "1", features = ["v4"] }
+fastembed = { version = "7.6.1", optional = true, default-features = false }
